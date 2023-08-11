@@ -17,7 +17,8 @@ module OmniAuth
         token_url: 'https://open.tiktokapis.com/v2/oauth/token/',
         extract_access_token: proc do |client, hash|
           ::OAuth2::AccessToken.from_hash(client, hash)
-        end
+        end,
+        auth_scheme: :request_body
       }
 
       option :authorize_options, %i[scope display auth_type]
