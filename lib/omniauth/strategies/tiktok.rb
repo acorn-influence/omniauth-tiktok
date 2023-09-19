@@ -18,7 +18,10 @@ module OmniAuth
         extract_access_token: proc do |client, hash|
           ::OAuth2::AccessToken.from_hash(client, hash)
         end,
-        auth_scheme: :request_body
+        # A bit of a misnomer: we were using :request_body, but it would overwrite the token params and include
+        # `client_id` as well. See oauth2 gem's lib/oauth2/Authenticator#apply
+        # In this way we send exactly what TikTok is expecting via this class's #token_params
+        auth_scheme: :private_key_jwt
       }
 
       option :authorize_options, %i[scope display auth_type]
@@ -69,6 +72,7 @@ module OmniAuth
         super.tap do |params|
           params.delete(:client_id)
           params[:client_key] = options.client_id
+          params[:client_secret] = options.client_secret
         end
       end
 
